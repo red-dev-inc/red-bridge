@@ -1,6 +1,6 @@
-## Maintain ZavaX Wardens and Wallet Control Sequence Diagram Notes
-### Maintain ZavaX Wardens - Wallet States
-As warden maintenance progresses, the bridge wallet passes through three distinct *wallet states* (0-2). Which state a transaction is in is important to know during failure recovery.
+## Maintain ZavaX guardians and Wallet Control Sequence Diagram Notes
+### Maintain ZavaX guardians - Wallet States
+As guardian maintenance progresses, the bridge wallet passes through three distinct *wallet states* (0-2). Which state a transaction is in is important to know during failure recovery.
 
 <b>State 0</b>
 - No changes
@@ -40,7 +40,7 @@ As warden maintenance progresses, the bridge wallet passes through three distinc
     </tr>
     <tr>
         <td>12</td>
-        <td>No quarum of new/continuing wardens.</td>
+        <td>No quarum of new/continuing guardians.</td>
         <td>State 0<br>No changes</td>
         <td>ZCE will notify ZavaX Agent to try again in 24 hours.</td>
     </tr>
@@ -101,7 +101,7 @@ As warden maintenance progresses, the bridge wallet passes through three distinc
 
 2. As it starts, the UI checks with the ZavaX Agent for previous failures and prompt Owner if there has been one for that Owner's address about how to proceed.
 
-3. Only *certified* ZavaX Agents run by Wardens can perform connections 6, 17 and 28 of bridge maintenance, and the ZCE will only accept connections from one certified ZavaX Agent at a time. 
+3. Only *certified* ZavaX Agents run by guardians can perform connections 6, 17 and 28 of bridge maintenance, and the ZCE will only accept connections from one certified ZavaX Agent at a time. 
    
 4. For the transaction built for connection 17, if someone has previously sent money directly to the bridge wallet address (which is difficult to do but possible), these funds will not be moved to the new wallet. 
 5. ZCE = ZavaX Consensus Engine.
@@ -111,15 +111,15 @@ As warden maintenance progresses, the bridge wallet passes through three distinc
 
 ### Certified ZavaX Agent Rotation Rules
 
-The Maintain Wardens task runs daily at midnight UTC. The ZavaX Agent that initiates the Maintain Wardens process is paid a fee. For fairness, all current wardens are given an equal chance as follows. 
+The Maintain guardians task runs daily at midnight UTC. The ZavaX Agent that initiates the Maintain guardians process is paid a fee. For fairness, all current guardians are given an equal chance as follows. 
 
-The ZCE makes a list of wardens. The warden at the top of the list has the exclusive *certified* opportunity to do it starting at 0:00 UTC. Then after five minutes, two more are certified, then at ten minutes, four more are certified, and so on, until the use-case has been completed for that day or all ZavaX Agents have been certified, whichever comes first.
+The ZCE makes a list of guardians. The guardian at the top of the list has the exclusive *certified* opportunity to do it starting at 0:00 UTC. Then after five minutes, two more are certified, then at ten minutes, four more are certified, and so on, until the use-case has been completed for that day or all ZavaX Agents have been certified, whichever comes first.
 
-The next day, the warden with the ZavaX Agent that completed the bridge maintenance is placed at the bottom of the list, and the rest are moved up one spot.
+The next day, the guardian with the ZavaX Agent that completed the bridge maintenance is placed at the bottom of the list, and the rest are moved up one spot.
 
-During the Maintain Wardens process, there are three times when a ZavaX Agent must ask the ZCE to perform work:
+During the Maintain guardians process, there are three times when a ZavaX Agent must ask the ZCE to perform work:
 
-1. Bringing the bridge down for maintenance and asking the new and continuing wardens to create a new wallet.
+1. Bringing the bridge down for maintenance and asking the new and continuing guardians to create a new wallet.
    
 2. Transferring funds from the old wallet to the new wallet.
 

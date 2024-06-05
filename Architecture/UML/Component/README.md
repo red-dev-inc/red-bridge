@@ -12,12 +12,12 @@ It is up to each note operator to secure its ZavaX UI web server from DoS attack
 
 **ZavaX Agent**
 
-The ZavaX Agent is software run by a ZavaX warden that is responsible for performing tasks that facilitate the bridging process. Any ZavaX Agent can perform these task, and the token owner can choose which ZavaX Agent they would like to use in the Bridge UI. These tasks are:
+The ZavaX Agent is software run by a ZavaX guardian that is responsible for performing tasks that facilitate the bridging process. Any ZavaX Agent can perform these task, and the token owner can choose which ZavaX Agent they would like to use in the Bridge UI. These tasks are:
 
 - Deliver warp messages
 - Get ZEC balances
 - Submit signed ZEC transactions
-- Initiate warden maintenance
+- Initiate guardian maintenance
 - Request consensus validation
 
 The ZavaX Agent need not be trusted; all operations requiring trust are performed by the ZCE. 

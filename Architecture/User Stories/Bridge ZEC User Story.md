@@ -17,7 +17,7 @@
 
 2. **Preparing for Bridging**:
     - **Given** the UI displays my transparent ZEC balance,
-    - **When** I send ZEC to the transparent address associated with my AVAX wallet using Nighthawk/YWallet,
+    - **When** I send ZEC to the transparent address associated with my AVAX wallet using Zcash Wallet,
     - **Then** I see a confirmation of the transfer completion and an updated transparent ZEC balance in the UI.
 
 3. **Initiating Bridge Request**:
@@ -27,7 +27,7 @@
 
 4. **Submitting Bridging Transaction**:
     - **Given** a signed ZEC transaction is composed,
-    - **When** I authorize the transaction fee and the transaction is submitted to the ZavaX Agent,
+    - **When** I verify the transaction (ZIP-317) fee, authorize it and the transaction is submitted to the ZavaX Agent,
     - **Then** the ZavaX Agent forwards this transaction to Zebra for inclusion in the Zcash blockchain.
 
 5. **Transaction Confirmation and ZEC.z Minting**:

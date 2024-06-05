@@ -1,15 +1,15 @@
 @startuml
 left to right direction
-title Maintain ZavaX Wardens Communication E
+title Maintain ZavaX Guardians Communication E
 
 class "ZavaX\nAgent" as ZA
 class "ZavaX\nConsensus\nEngine" as ZCE
-class "Current\nWardens" as PV
+class "Current\nGuardians" as PV
 
 ZA -down-> ZCE : **28: Wallet migration successful?**\n**(any Agent)**
 ZCE -down-> PV : 29: Verify
 PV -down-> ZCE : 30: Accepted/rejected
-ZCE -down-> ZCE #brown : <color:brown>31: Queue bridge toll fees for\n<color:brown>expiring wardens\n<color:brown>and certified ZavaX Agent
+ZCE -down-> ZCE #brown : <color:brown>31: Queue bridge toll fees for\n<color:brown>expiring guardians\n<color:brown>and certified ZavaX Agent
 ZCE -down-> ZCE #purple : <color:purple>32: Update wallet address, clean up,\n<color:purple>and prep for next day\n<color:purple>(certified Agent timing list, etc.)
 ZCE -down-> ZCE #blue : <color:blue>33: Write block with results
 ZCE -down-> ZCE #green : <color:green>34: **Status: Up**</color>\n**<color:green>'ZavaX bridge functioning normally.'**

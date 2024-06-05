@@ -164,7 +164,7 @@ For simplicity and clarity, the sequence diagram does not show what happens in c
 
 2. As it starts, the UI checks with the ZavaX Agent for previous failures and prompt Owner if there has been one for that Owner's address about how to proceed.
 
-3. The only ZavaX Agent that gets paid fees for its service is the one that completes the bridging transfer. However, any warden-operated ZavaX Agent can push bridging transactions forward.
+3. The only ZavaX Agent that gets paid fees for its service is the one that completes the bridging transfer. However, any guardian-operated ZavaX Agent can push bridging transactions forward.
 
 4. UI = User Interface. ZCE = ZavaX Consensus Engine.
 
@@ -173,7 +173,7 @@ For simplicity and clarity, the sequence diagram does not show what happens in c
 The ZEC.z owner needs enough AVAX in their wallet to pay the gas in connection *14* to call the ZavaX Contract on the C-chain. 
 
 The ZavaX Agent extracts its bridging fee in connection *22* in ZEC:
-- Bridging fee goes to ZavaX Agent warden's ZEC address.
+- Bridging fee goes to ZavaX Agent guardian's ZEC address.
 - Zcash tx fee goes to Zcash miners.
 - Remaining ZEC goes to ZEC.z Owner's t-address.
 
