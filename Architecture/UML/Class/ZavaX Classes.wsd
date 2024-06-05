@@ -167,7 +167,7 @@ package "ZavaXBridge" {
       class "Client" as C {
 
          + verifyChangeRequest()
-         + updateWardensSchedules(): Response
+         + updateGuardiansSchedules(): Response
          + setUnderMaintanence()
          + restartProvisioning()
          + validateTransactionInZEC(transaction: Transaction): Response
@@ -181,7 +181,7 @@ package "ZavaXBridge" {
          + verifyWalletTransfer()
       }
 
-      class "Wardens" as W {
+      class "Guardians" as W {
          + generateBLSKey()
          + submitBLSPublicKey()
       }

@@ -109,7 +109,7 @@ For simplicity and clarity, the sequence diagram does not show what happens in c
 
 2. As it starts, the UI checks with the ZavaX Agent for previous failures and prompts the Owner if there has been one for that Owner's address for guidance about how to proceed.
 
-3. The only ZavaX Agent that gets paid fees for its service is the one that completes the bridging transfer. However, any warden-operated ZavaX Agent can push bridging transactions forward.
+3. The only ZavaX Agent that gets paid fees for its service is the one that completes the bridging transfer. However, any guardian-operated ZavaX Agent can push bridging transactions forward.
 
 4. UI = User Interface. ZCE = ZavaX Consensus Engine.
    
@@ -121,7 +121,7 @@ The ZEC Owner only needs to own ZEC, not AVAX, to bridge. The ZavaX Agent is req
 
 The ZavaX Agent is paid a fee for acting as the Agent for the bridging transaction. This fee is determined by the ZavaX Agent itself, so different agents may charge different bridging fees. The fee charged can be a percentage of the transaction and/or a flat fee, and it is paid in ZEC.z. 
 
-In connections *29* and *30* the ZA's bridging fees are subtracted from the bridge transaction, and the warp message contains instructions to mint the bridging fee for the ZA warden and the remaining amount for the ZEC Owner.
+In connections *29* and *30* the ZA's bridging fees are subtracted from the bridge transaction, and the warp message contains instructions to mint the bridging fee for the ZA guardian and the remaining amount for the ZEC Owner.
 
 ZavaX Agent will also deposit *seed* AVAX in ZEC Owner's ZEC.z wallet. This amount is chosen by the ZA, but we suggest that it should be enough to cover gas for one or two trades on an Avalanche DEX.
 

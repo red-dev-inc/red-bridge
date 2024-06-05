@@ -6,6 +6,8 @@ actor "ZEC.z Owner" as ZO
 participant "ZavaX\nBridge UI" as UI
 entity "Core\nWallet" as MC
 participant "ZavaX\nAgent" as ZA 
+participant "Current\nGuardians" as PV
+participant "Signing\nGuardians" as SG
 participant "ZEC.z\nContract" as ZC
 entity "Avalanche\nC-Chain" as CC  
 entity "\nZebra" as Z
@@ -44,10 +46,17 @@ group Create Zcash transaction (unwrap ZEC)
     ZC --> ZA : ZavaX message for ZEC unwrap
     ZA -> ZCE ++: Submit warp message,\nunsigned transaction\nfor ZEC unwrap, & tx fee
     ZCE -> ZCE: Validate warp message\nfrom contract
-    ZCE -> ZCE: Wardens\nApprove & sign\nwith BLS
-    ZCE -> ZCE: Write block:\nBLS signatures\ntransaction ready
+    ZCE -> PV : broadcast message to current\nguardians to poll for signing\nguardians\participants.
+    ZCE -> SG : Gather FROST commitments\n from signing guardians/participants
+    SG --> ZCE : Each submit FROST round1.commit()\nthrough authenticated channel
+    ZA -> ZCE : create new FROST SigningPackage
+    ZCE --> SG : send SigningPackage to all\n signing guardians participating\nof the signature.
+    SG -> SG : All t participant signing guardians\nuse SigningPackage, nonces\nand KeyPackage\nto produce their signature round2.sign().
+    SG --> ZCE : All t signing guardians\nsubmit their SignatureShare to ZCE\nthrough authenticated channel
+    ZCE -> ZCE : Write signature Shares to a block
+    ZCE -> ZCE : aggregate signatures
+    ZCE -> ZCE : sign xfer
     ZCE --> ZA --: Validation results
-    ZA -> ZA: Aggregate\nBLS signatures
     ZA -> Z ++: Submit signed transaction
     loop until confirmed depth reached
         ZA -> Z: Poll for block depth
@@ -60,7 +69,7 @@ opt Zcash transaction appears successful
     ZA -> ZCE ++: Check OK to burn ZEC.z
     ZCE -> Z ++: Transaction committed?
     Z --> ZCE --: Confirmation
-    note left: Each ZavaX warden\nqueries its own\nZebra instance
+    note left: Each ZavaX guardian\nqueries its own\nZebra instance
     ZCE -> ZCE : Write block:\ntransaction\nsuccessful/failed
     alt Zcash transaction is successful 
         ZCE --> ZA : Message that ZEC.z can be burnt

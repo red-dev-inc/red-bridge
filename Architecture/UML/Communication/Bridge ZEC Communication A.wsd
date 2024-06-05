@@ -1,4 +1,4 @@
-@startuml "Maintain ZavaX Wardens Communication A"
+@startuml "Maintain ZavaX Guardians Communication A"
 top to bottom direction
 
 class "ZEC Owner" as ZH

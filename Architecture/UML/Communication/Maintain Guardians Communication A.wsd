@@ -1,6 +1,6 @@
 @startuml
 left to right direction
-title Maintain ZavaX Wardens Communication A
+title Maintain ZavaX Guardians Communication A
 
 class "ZavaX\nAgent" as ZA
 class "Avalanche\nP-Chain" as AP

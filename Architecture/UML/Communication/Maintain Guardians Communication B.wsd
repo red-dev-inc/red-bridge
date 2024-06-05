@@ -1,18 +1,18 @@
 @startuml
 left to right direction
-title Maintain ZavaX Wardens Communication B
+title Maintain ZavaX Guardians Communication B
 
 class "ZavaX\nAgent" as ZA
 class "ZavaX\nConsensus\nEngine" as ZCE
-class "New/Continuing\nWardens" as NV
+class "New/Continuing\nGuardians" as NV
 
-ZA -down-> ZCE : **6: Make wardens change request**\n**(certified Agent only)**
+ZA -down-> ZCE : **6: Make guardians change request**\n**(certified Agent only)**
 ZCE -down-> ZCE #brown : <color:brown>7: Verify ZavaX Agent\n<color:brown>certification & change request
 ZCE -down-> ZCE #red : <color:red>8: **Status: Down**\n<color:red>**'ZavaX bridge down for maintenance'**
 ZCE -down-> NV : 9: Create new distributed private key
 NV -up-> NV : 10: Create new BLS keys,\n1 key per 0.1% stake
 NV -up-> ZCE : 11: Each submit public key part
-ZCE -down-> ZCE #blue : <color:blue>12: Check for warden quorum
+ZCE -down-> ZCE #blue : <color:blue>12: Check for guardian quorum
 ZCE -down-> ZCE #purple : <color:purple>13: Assemble public key\n<color:purple>& wallet address, and\n<color:purple>write to a block
 ZCE -up-> ZA: 14 : New wallet address
 

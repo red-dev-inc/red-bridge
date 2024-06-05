@@ -1,11 +1,11 @@
 @startuml
 left to right direction
-title Maintain ZavaX Wardens Communication C
+title Maintain ZavaX Guardians Communication C
 
 class "ZavaX\nAgent" as ZA
 class "Zebra" as Z
 class "ZavaX\nConsensus\nEngine" as ZCE
-class "Current\nWardens" as PV
+class "Current\nGuardians" as PV
 
 ZA -down-> Z : 15: **Request current wallet balance**
 Z -down-> ZA : 16: Current wallet balance

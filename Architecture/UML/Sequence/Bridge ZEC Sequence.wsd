@@ -3,7 +3,7 @@
 title Bridge ZEC to ZEC.z Sequence
 
 actor "ZEC Owner" as ZH
-entity "Nighthawk/\nYWallet" as YW
+entity "Zcash\nWallet" as YW
 participant "ZavaX\nBridge UI" as UI
 entity "Core\nWallet" as MC
 participant "ZavaX\nAgent" as ZA 
@@ -52,7 +52,7 @@ group Validate
     ZCE -> ZCE : check for\nno replay
     ZCE -> Z ++: Validate: existence, depth
     Z --> ZCE --: Existence, depth
-    note left: Each ZavaX warden\nqueries its own\nZebra instance
+    note left: Each ZavaX guardian\nqueries its own\nZebra instance
     ZCE -> ZCE : Write block\nwith ZEC.z\nminting message
 end 
 

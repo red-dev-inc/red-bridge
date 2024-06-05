@@ -4,11 +4,11 @@
 Here you will find architecture-related documents for the ZavaX Zcash-Avalanche bridge. This bridge uses the technique known as *wrapping* to transport value between the Zcash and Avalanche platforms, wrapping Zcash's native token ZEC into ZEC.z which can be used on the Avalanche C-chain and beyond. Likewise, ZEC.z owners can bridge their ZEC.z to ZEC on the Zcash blockchain.
 
 ### Key Features
-1. This bridge is unique in that it can be operated permissionlessly using an elastic subnet on Avalanche. The subnet's validators serve as bridge wardens, deciding collectively, in a decentralized manner, about what transactions can pass over the bridge and what transactions cannot.
+1. This bridge is unique in that it can be operated permissionlessly using an elastic subnet on Avalanche. The subnet's validators serve as bridge guardians, deciding collectively, in a decentralized manner, about what transactions can pass over the bridge and what transactions cannot.
 
 2. A key feature of this bridge is that, as with Ava Lab's Bitcoin-Avalanche bridge, the same private key is used for both the bridge user's Zcash t-address and for the Avalanche C-Chain address. Only the bridge user knows this key; ZavaX components do not need to know it. Because the bridge user knows the private key, they control both wallets exclusively; no ZavaX node or component ever takes possession of their ZEC.z tokens.
 
-3. Another key feature of this bridge is that ZEC locked in the bridge can only be moved by the wardens agreeing to do so *together*. The technology that makes this possible is BLS threshold signatures.
+3. Another key feature of this bridge is that ZEC locked in the bridge can only be moved by the guardians agreeing to do so *together*. The technology that makes this possible is FROST threshold signatures.
 
 The ZavaX bridge is being built now. These architectural design documents are a step along the way of bringing it to life.
 
@@ -30,7 +30,7 @@ Past this, the more you understand about the following topics, the more you'll b
 - AvalancheGo
 - Avalanche Snowman++ consensus
 - Avalanche warp messaging
-- BLS signatures
+- FROST signatures (in replacement of BLS Signatures)
 - UML 2.0
   
 These are each briefly described in the **Terms to Know** section, below.
@@ -59,9 +59,9 @@ Here is a brief guide about how we recommend you become familiar with ZavaX arch
 
 6. Look at the **UML Class diagram** ([PlantUML](UML/Class/ZavaX%20Classes.wsd)/[image](UML/Class/ZavaX%20Classes.png)) to see how each of the major components of the system are structured. The class diagram shows a static view of the system architecture that is needed to support the use-cases.
 
-7. Now it's time to learn about how to become a bridge warden by staking the ZavaX bridge's elastic subnet staking token, ZAX. (All elastic subnets require a staking token; this is what allows them to operate permissionlessly.)
+7. Now it's time to learn about how to become a bridge guardian by staking the ZavaX bridge's elastic subnet staking token, ZAX. (All elastic subnets require a staking token; this is what allows them to operate permissionlessly.)
 
-* Begin by looking at the **UML Use Case diagram** ([PlantUML](UML/Usecase/ZavaX%20Usecases.wsd)/[image](UML/Usecase/ZavaX%20Usecases.png)) again, but this time focusing on the third and fourth use-cases (which are connected). Then look at the UML Sequence diagrams that you haven't yet examined, **Create ZavaX Validator Sequence** ([PlantUML](UML/Sequence/Create%20ZavaX%20Validator%20Sequence.wsd)/[image](UML/Sequence/Create%20ZavaX%20Validator%20Sequence.png)), **Maintain Wardens Sequence** ([PlantUML](UML/Sequence/Maintain%20Wardens%20Sequence.wsd)/[image](UML/Sequence/Maintain%20Wardens%20Sequence.png)), and [ZavaX **Validator Expires Sequence** ([PlantUML](UML/Sequence/ZavaX%20Validator%20Expires%20Sequence.wsd)/[image](UML/Sequence/ZavaX%20Validator%20Expires%20Sequence.png)). The first and third sequence diagrams should be very familiar to you if you are familiar with how Avalanche validators work. The second, *Maintain Wardens Sequence*, is unique to ZavaX and shows how validators are promoted to wardens and then demoted near the end of their validation period. 
+* Begin by looking at the **UML Use Case diagram** ([PlantUML](UML/Usecase/ZavaX%20Usecases.wsd)/[image](UML/Usecase/ZavaX%20Usecases.png)) again, but this time focusing on the third and fourth use-cases (which are connected). Then look at the UML Sequence diagrams that you haven't yet examined, **Create ZavaX Validator Sequence** ([PlantUML](UML/Sequence/Create%20ZavaX%20Validator%20Sequence.wsd)/[image](UML/Sequence/Create%20ZavaX%20Validator%20Sequence.png)), **Maintain guardians Sequence** ([PlantUML](UML/Sequence/Maintain%20guardians%20Sequence.wsd)/[image](UML/Sequence/Maintain%20guardians%20Sequence.png)), and ZavaX **Validator Expires Sequence** ([PlantUML](UML/Sequence/ZavaX%20Validator%20Expires%20Sequence.wsd)/[image](UML/Sequence/ZavaX%20Validator%20Expires%20Sequence.png)). The first and third sequence diagrams should be very familiar to you if you are familiar with how Avalanche validators work. The second, *Maintain guardians Sequence*, is unique to ZavaX and shows how validators are promoted to guardians and then demoted near the end of their validation period. 
   
 * As with the previous use-cases, you can look at the associated *notes* documents [in the same folder](UML/Sequence/) for notes, particularly around failure recovery, and you can zoom in on parts of the UML Sequence diagram by viewing the associated [Communication diagrams](UML/Communication/). Finally, you can look again at the **class diagram** ([PlantUML](UML/Class/ZavaX%20Classes.wsd)/[image](UML/Class/ZavaX%20Classes.png)) to see the structure of the application itself that is needed to support these use cases. 
 ### Terms to Know
@@ -76,7 +76,9 @@ Here are some of the terms that you need to be familiar with to understand the b
 
 **ZavaX Validator** - An Avalanche Primary Network validator that also validates the ZavaX Subnet.
 
-**ZavaX Warden** - A ZavaX Validator that helps to control the ZavaX bridge wallet and bridging transactions.
+**ZavaX Guardian** - A ZavaX Validator that helps to control the ZavaX bridge wallet and bridging transactions.
+
+**[FROST](https://frost.zfnd.org/index.html)**: Flexible-Round Optimized Schnorr Threshold signature scheme.
 
 **[BLS](https://en.wikipedia.org/wiki/BLS_digital_signature)** - A well-known threshold digital signature scheme used by Avalanche (and also [Ethereum](https://eth2book.info/capella/part2/building_blocks/signatures/)). 
 
@@ -88,10 +90,10 @@ Here are some of the terms that you need to be familiar with to understand the b
 - Deliver warp messages
 - Get ZEC balances
 - Submit signed ZEC transactions
-- Initiate warden maintenance
+- Initiate guardian maintenance
 - Request consensus validation
 
-**Certified ZavaX Agent** - A ZavaX Agent operated by the ZavaX Validator that is currently *certified* by the ZCE to perform the ZavaX Agent job for the *Maintain ZavaX Wardens and Wallet Control* use-case. This use-case runs once every day. As it begins, one ZavaX Agent is certified. Then after five minutes, two more are certified, then at ten minutes, four more are certified, and so on, until the use-case has been completed for that day or all ZavaX Agents have been certified, whichever comes first.
+**Certified ZavaX Agent** - A ZavaX Agent operated by the ZavaX Validator that is currently *certified* by the ZCE to perform the ZavaX Agent job for the *Maintain ZavaX guardians and Wallet Control* use-case. This use-case runs once every day. As it begins, one ZavaX Agent is certified. Then after five minutes, two more are certified, then at ten minutes, four more are certified, and so on, until the use-case has been completed for that day or all ZavaX Agents have been certified, whichever comes first.
 
 **ZEC.z Contract** - The LayerZero compatible ERC-20 contract on the Avalanche C-Chain that is responsible for ZavaX bridging operations including minting, burning, holding in escrow, sending, and receiving ZEC.z.
 
@@ -111,7 +113,7 @@ Here are some of the terms that you need to be familiar with to understand the b
 
 **[Zebra](https://zfnd.org/zebra/)** - Zcash node software maintained by the Zcash Foundation.
 
-**[Ywallet](https://ywallet.app/)** and **[Nighthawk Wallet](https://nighthawkwallet.com/)** - Wallet software that can be used with Zcash shielded and transparent  pools. (Other wallets exist as well.)
+**[Ywallet](https://ywallet.app/)**, **[Nighthawk Wallet](https://nighthawkwallet.com/)** and **[Zashi](https://electriccoin.co)** - Wallet software that can be used with Zcash shielded and transparent  pools. (Other wallets exist as well.)
 
 **ZavaX Consensus Engine (ZCE)** - The heart of the ZavaX bridge subnet, this code is what allows all the nodes to reach consensus on accepting or rejecting each step required to bridge between Zcash and Avalanche and to perform other bridge-related functionality. All of the decision-making for the bridge happens in this code. No other components have any decision-making power.
 
@@ -119,11 +121,10 @@ Here are some of the terms that you need to be familiar with to understand the b
 
 **Gas** - This is the charge, in AVAX, of running code on the C-Chain, and specifically the ZavaX contract.
 
-**Tx Fee** - This is the charge, in ZEC, of processing a transaction on the Zcash blockchain.
+**Tx Fee** - This is the charge, in ZEC, of processing a transaction on the Zcash blockchain. Zcash has variable fees depending on the inputs and output produced by the transaction. If you'd like to know more about the, this fee mechanism is specified in [ZIP-317](https://zips.z.cash/zip-0317).
 
 **Bridging Fee** - This is a charge, in either ZEC or ZEC.z, that the bridge nodes charge for processing bridging transactions in addition to the Gas and Tx Fees.
 
 **ZavaX Elastic Subnet** - This is a group of Avalanche primary network validators that also have installed the ZavaX components necessary to help run the ZavaX bridge, and on which their owners have staked at least 2000 ZAX. "Elastic" refers to the fact that the validators are allowed to validate the subnet just by staking ZAX rather than by being on a permissioned list.
 
 **ZAX token** - The ZavaX-specific Avalanche token, created on the X-Chain, that is used for staking the ZavaX Elastic Subnet.
-
