@@ -28,7 +28,7 @@
 4. **Zcash Transaction Creation**:
     - **Given** the warp message is created,
     - **When** the ZavaX Agent submits this message along with an unsigned transaction for ZEC unwrap to the ZavaX Consensus Engine,
-    - **Then** the Consensus Engine validates the warp message, and wardens approve and sign the transaction.
+    - **Then** the Consensus Engine validates the warp message, and guardians approve and sign the transaction.
 
 5. **Finalizing Zcash Transaction**:
     - **Given** the transaction is approved and signed,

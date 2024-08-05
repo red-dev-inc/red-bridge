@@ -1,0 +1,12 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication D\nFROST DKG Part 2
+
+class "ZavaX\nAgent" as ZA
+class "New/Continuing\nGuardians" as NV
+
+ZA -down-> NV : 14: Run dkg.part2() with own's SecretPackage \nand broadcast round2.Package. Keep\nround2.SecretPackage in memory.
+NV -down-> NV : 15: Run dkg.part2() with own's SecretPackage \nand broadcast round2.Package. Keep\nround2.SecretPackage in memory.
+ZA -down-> ZA : 16: Monitor broadcast channel to verify all\nround2.Packages have been broadcasted.
+
+@enduml

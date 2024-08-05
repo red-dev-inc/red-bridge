@@ -1,0 +1,85 @@
+@startuml
+
+title Maintain ZavaX Guardians and Wallet Control
+participant "Coordinating ZavaX Agent/Guardian" as ZA
+entity "Avalanche\nP-Chain" as AP
+participant "ZavaX\nConsensus\nEngine" as ZCE
+participant "New/Continuing\nGuardians" as NV
+participant "Current\nGuardians" as PV
+participant "threshold of current\nGuardians" as SG
+entity "Zebra" as Z
+
+autonumber
+group Preapare for maintenance
+    loop
+        ZA -> ZA++ : Wait for next\n5 min per 24 hr\ntime slot to become\ncertified Agent
+    end
+    ZA -> AP++ : New and previously\nabsent ZavaX validators?
+    AP --> ZA : List of new ZavaX validators
+    ZA -> AP : Expiring ZavaX validators?
+    AP --> ZA-- : List of expiring ZavaX validators
+end
+group Prepare new bridge wallet 
+    ZA -> ZCE++ : Make guardians change request\n(certified Agents only)
+    ZCE -> ZCE : Verify ZavaX Agent\ncertification & change request
+    ZCE -[#red]> ZCE : <color:red>Write block: <b>Status: Down\n'<color:red>ZavaX bridge down for maintenance'
+    ZA -> NV++ : Broadcast create new signature message\nwith total number of n participants and\nt < n threshold number.\n1 key per 0.1% stake.
+    group FROST Distributed Key Generation (DKG) Part 1
+        ZA -> NV : run FROST dkg.part1() to generate round1.Package.\nKeeps SecretPackage and broadcast round1.Package\nto the rest of the participants
+        NV -> NV : run FROST dkg.part1() to generate round1.Package.\nKeeps SecretPackage and broadcast round1.Package\nto the rest of the participants
+        ZA -> ZA : Monitor broadcast channel to verify all\nround1. Packages have been broadcasted 
+        ZA -> NV : gather all broadcasted round1.Package from\nother participants and store in-memory.
+    end
+    group FROST DKG Part 2
+        ZA -> NV : run dkg.part2() with own's SecretPackage and broadcast\nround2.Package. Keep\nround2.SecretPackage in memory.
+        NV -> NV : run dkg.part2() with own's SecretPackage and broadcast\nround2.Package. Keep\nround2.SecretPackage in memory 
+        ZA -> ZA : Monitor broadcast channel to verify all\nround2.Packages have been broadcasted 
+    end
+    group FROST DKG Part 3
+    ZA -> NV : Run dkg.part3() with round2's own's\nSecretPackage all gathered round1.Package\n from part 1 and all round2.Package\n from part 2.
+    NV -> NV : Each one stores privately and\nand securely its own KeyPackage with secret key.
+    end
+    NV --> ZA-- : Each submit their generated PublicKeyPackage to Coordinating ZavaX Agent / Guardian.
+    ZA -> ZA : Check for guardian quorum. 
+    ZA -> ZA : Aggregate public key\n& wallet address, and\nwrite to a block
+    ZA --> NV --: New wallet address
+end 
+group Migrate from current to new bridge wallet
+    ZA -> Z ++: Request current wallet balance
+    Z --> ZA--: Current wallet balance
+    ZA -> ZCE ++: Unsigned xfer transaction\nfrom current to new wallet\n(consolidate UTXOs)\n(certified Agents only)
+    ZA -> ZA : Verify xfer
+    group FROST Signature Round 1
+    ZA -> PV : broadcast message to current\nguardians to poll for t threshold\nguardians\participants.
+    ZA -> SG : Gather FROST commitments\n from signing guardians/participants
+    SG --> ZA : Each submit FROST round1.commit()\nthrough authenticated channel
+    end
+    group FROST Signature Round 2
+    ZA -> ZA : create new FROST SigningPackage
+    ZA --> SG : send SigningPackage to all\n signing guardians participating\nof the signature.
+    SG -> SG : All t participant signing guardians\nuse SigningPackage, nonces\nand KeyPackage\nto produce their signature round2.sign().
+    SG --> ZA : All t signing guardians\nsubmit their SignatureShare to ZCE\nthrough authenticated channel
+    end
+    ZA -> ZCE : Write signature Shares to a block
+    group FROST Signature production
+    ZA -> ZA : aggregate signatures
+    ZA -> ZA : sign xfer
+    ZA -> ZA : return signed transaction\nsuccess or failure 
+    end
+    ZA -> Z++ : Submit signed xfer to new wallet
+    loop until confirmed depth reached
+        ZA -> Z: Poll for block depth
+        Z --> ZA--: Return depth
+    end 
+end 
+group Finish bridge maintenance
+    ZA -> ZCE++ : Wallet migration successful?\n(any Agent)
+    ZCE -> PV++ : Verify
+    PV --> ZCE--: Accepted/rejected
+    ZCE -> ZCE: Queue bridge toll fees for\nexpiring guardians\nand certified ZavaX Agent
+    ZCE -> ZCE: Update wallet address, clean up,\nand prep for next day\n(certified Agent timing list, etc.)
+    ZCE -> ZCE: Write block with results
+    ZCE -[#green]> ZCE: <color:green>Write block: <b>Status: Up\n<color:green>'ZavaX bridge functioning normally.'
+    ZCE --> ZA --: Results
+end 
+@enduml

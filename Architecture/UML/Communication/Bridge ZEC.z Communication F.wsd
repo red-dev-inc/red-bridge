@@ -1,16 +1,14 @@
 @startuml
-title Bridge ZEC.z to ZEC Communication F\nBridging Failed
+title Bridge ZEC.z to ZEC Communication F
 top to bottom direction
 
 class "ZavaX\nAgent" as ZA
 class "ZavaX\nConsensus\nEngine" as ZCE
-class "ZEC.z\nContract" as ZC
-class "Avalanche\nC-Chain" as CC
+class "Zebra\n" as Z
 
-ZCE -up-> ZA : **40: Message to refund ZEC.z from escrow**
-ZA -up-> ZC : 41: Message + gas
-ZC -down-> ZC : 42: Verify warp signature\n& weight
-ZC -down-> CC : 43: Refund ZEC.z
-CC -up-> ZC : 44: Confirmation
+ZA -down-> ZCE : **38: Check OK to burn ZEC.z**
+ZCE -down-> Z : 39: Transaction committed?
+Z -up-> ZCE : 40: Confirmation
+ZCE -down-> ZCE : 41: Write block:\ntransaction\nsuccessful/failed
 
 @enduml

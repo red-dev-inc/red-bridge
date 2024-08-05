@@ -1,0 +1,11 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication E\nFROST DKG Part 3
+
+class "ZavaX\nAgent" as ZA
+class "New/Continuing\nGuardians" as NV
+
+ZA -down-> NV : 17: Run dkg.part3() with round2's own's\nSecretPackage all gathered round1.Package\n from part 1 and all round2.Package\n from part 2.
+NV -down-> NV : 18: Each one stores privately and\nand securely its own KeyPackage with secret key.
+
+@enduml

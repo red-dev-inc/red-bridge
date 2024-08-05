@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication A
+
+class "ZavaX\nAgent" as ZA
+class "Avalanche\nP-Chain" as AP
+
+ZA -down-> AP : **2: New and previously**\n**absent ZavaX validators?**
+AP -down-> ZA : 3: List of new ZavaX validators
+ZA -down-> AP : 4: Expiring ZavaX validators?
+AP -down-> ZA : 5: List of expiring ZavaX validators
+
+@enduml

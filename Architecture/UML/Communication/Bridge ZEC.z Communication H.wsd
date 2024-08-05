@@ -1,0 +1,16 @@
+@startuml
+title Bridge ZEC.z to ZEC Communication H\nBridging Failed
+top to bottom direction
+
+class "ZavaX\nAgent" as ZA
+class "ZavaX\nConsensus\nEngine" as ZCE
+class "ZEC.z\nContract" as ZC
+class "Avalanche\nC-Chain" as CC
+
+ZCE -up-> ZA : **47: Message to refund ZEC.z from escrow**
+ZA -up-> ZC : 48: Message + gas
+ZC -down-> ZC : 49: Verify warp signature\n& weight
+ZC -down-> CC : 50: Refund ZEC.z
+CC -up-> ZC : 51: Confirmation
+
+@enduml

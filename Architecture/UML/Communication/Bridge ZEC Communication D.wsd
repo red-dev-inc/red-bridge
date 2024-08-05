@@ -7,9 +7,9 @@ class "ZavaX\nConsensus\nEngine" as ZCE
 class "Zebra\n" as Z
 
 ZA -down-> ZCE : **26: Submit vetted request for validation**
-ZCE -down-> Z : 27: Validate: existence, depth
-Z -up-> ZCE : 28: Existence, depth
-ZCE -down-> ZCE #blue: <color:blue>29: Record fees
+ZCE -down-> ZCE : 27: check for no replay
+ZCE -down-> Z : 28: Validate: existence, depth
+Z -up-> ZCE : 29: Existence, depth
 ZCE -down-> ZCE #brown: <color:brown>30: Write block\n<color:brown>with ZEC.z\n<color:brown>minting message
 
 @enduml

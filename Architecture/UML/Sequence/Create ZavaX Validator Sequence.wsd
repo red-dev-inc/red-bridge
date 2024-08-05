@@ -5,7 +5,7 @@ title Create ZavaX Validator
 
 actor "ZAX Owner" as ZO
 entity "Avalanche-cli" as AC
-entity "Ledger" as L
+entity "Hardware Wallet\ndevice" as L
 entity "Avalanche\nP-Chain" as AP
 
 ZO -> AC++ : Initiate validation\nand set\nZavaX Agent fees 
