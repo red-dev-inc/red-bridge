@@ -1,16 +1,17 @@
 @startuml
-title Bridge ZEC.z to ZEC Communication E\nBridging Successful
-top to bottom direction
+title Bridge ZEC.z to ZEC Communication E
+left to right direction
 
 class "ZavaX\nAgent" as ZA
-class "ZavaX\nConsensus\nEngine" as ZCE
-class "ZEC.z\nContract" as ZC
-class "Avalanche\nC-Chain" as CC
+class "Zebra" as Z
 
-ZCE -up-> ZA : **35: Message that ZEC.z can be burnt**
-ZA -up-> ZC : 36: Message + gas
-ZC -down-> ZC : 37: Verify warp signature\n& weight
-ZC -down-> CC : 38: Burn ZEC.z
-CC -up-> ZC : 39: Confirmation
+ZA -down-> ZA #brown : <color:brown> 31 : Write signature Shares to a block
+ZA -down-> ZA #blue : <color:blue> 32 : Aggregate signatures
+ZA -down-> ZA #purple : <color:purple> 33 : Sign xfer
+ZA -down-> ZA #green : <color:green> 34 : Validation results
+ZA -down-> Z : 35 : Submit signed transaction
+
+ZA -down-> Z: 36: Poll for block depth
+Z -up-> ZA : 37: Return depth
 
 @enduml

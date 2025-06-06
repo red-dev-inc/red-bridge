@@ -1,0 +1,95 @@
+@startuml
+
+title Maintain redbridge Guardians
+actor "redbridge\nAgent" as ZA
+participant "redbridge\nConsensus\nEngine" as RCE
+participant "Active redbridge\nValidators" as RBV
+participant "Each eligible validator for \nGuardianship in new epoch" as EV
+participant "All Other Validators eligible for \nGuardianship in new epoch" as NG
+participant "Ending epoch\nGuardians (n)" as PV
+participant "Ending epoch\nSigners (t)" as SG
+entity "Avalanche\nP-Chain" as AP
+entity "Zebra" as Z
+
+autonumber
+group Prepare for maintenance
+    loop
+        ZA -> ZA++ : Wait for next 1 min slot per 24 hr epoch to become a \nCertified Agent
+    end
+    ZA -> AP++ : List of redbridge validators during ending epoch with status?
+    AP --> ZA : List of redbridge validators and status (active, inactive, exited)
+    deactivate AP 
+end
+opt Prepare new bridge wallet if hasn't been done yet
+    ZA -> RCE++ : Make maintain redbridge guardians change request
+    RCE -> RCE : Verify redbridge Agent\ncertification & change request
+    RCE -[#red]> RCE : <color:red>Write block: <b>Status: Down\n"<color:red>redbridge down for maintenance"\n<color:red>and Certified Agent ID
+    ' retry blacklisting bad nodes
+    ' fall back to mempool when TLS node-to-node fails
+    ZA -> ZA : Wait for "Down" block
+    deactivate RCE
+    ZA -> RBV++ : Who wants to be a Guardian for the new epoch? (via broadcast)
+    RBV --> ZA : List of n Guardians for new epoch (via broadcast)
+    deactivate RBV
+    loop until wallet creation successful or 5 attempts completed
+        ZA -> EV++ : Broadcast create new signature message\nwith total of n participants and t < n \nthreshold number. 1 key per 0.1% stake.
+        ZA -> ZA : Start timeout countdown
+        EV -> EV : Run FROST dkg.part1 to generate round1.Package.
+        EV -> NG++ : Broadcast round1.Package\nto the rest of the participants
+        EV -> EV : Wait for round1.Packages to arrive \n(via broadcast) 
+        EV -> EV : Run FROST dkg.part2 to generate round2.Packages, \none round2.Package per participant.
+        EV -> NG : Send each round2.Package to its participant \nvia p2p, with broadcast (with encryption) as fallback.
+        deactivate NG 
+        EV -> EV : Wait for round2.Packages to arrive \n(via p2p or broadcast)
+        EV -> EV : Run dkg.part3 to generate its own KeyPackage
+        EV -> EV : Store KeyPackage \n(with secret share and PublicKeyPackage)
+        EV --> ZA : Report success with PublicKeyPackage
+        deactivate EV 
+    end
+    ZA -> ZA : Wait for DKG to complete
+    ZA -> RCE++ : Submit PublicKeyPackage and new epoch's Guardian List
+    RCE -> RCE : Does PublicKeyPackage match yours?\nAre you on/off the Guardian List as expected?
+    ' add response
+    RCE -> RCE : Write "Guardian PubKey" block with PublicKeyPackage \nand new epoch's Guardian List
+    
+end
+ZA -> ZA : Wait for "Guardian PubKey" block
+deactivate RCE
+group Migrate from current to new bridge wallet
+    ZA -> Z ++: Request current wallet balance
+    Z --> ZA--: Current wallet balance
+    ZA -> RCE ++: Unsigned "partially constructed" xfer transaction from current to new wallet\n(consolidate UTXOs) (Certified Agents only)
+    RCE -> RCE : Verify xfer transaction
+    RCE -> RCE : Write "Guardian Wallet Transfer" block with \nunsigned xfer transaction
+    ZA -> ZA : Wait for "Guardian Wallet Transfer" block
+    deactivate RCE
+    loop Until transaction is signed or no quorum, \nremoving misbehaving participants iteratively
+ '       activate SG
+        ZA -> PV++ : Who from ending epoch would like to sign? (via broadcast)
+        activate SG
+        SG --> ZA : Each indicate yes by submitting round1.commit()\nvia p2p, with broadcast (with encryption) as fallback
+        deactivate PV
+        ZA -> ZA : Wait, then create new SigningPackage
+        ZA --> SG : Send SigningPackage
+        SG -> SG : Verify SigningPackage matches \n"Guardian Wallet Transfer" block, and \nif so do round2.sign().
+        SG --> ZA : SignatureShares via p2p, \nwith broadcast (with encryption) as fallback
+        deactivate SG
+        ZA -> ZA : Wait for signatures
+        ZA -> ZA : Aggregate signatures and sign xfer \n(will fail if >0 participants are misbehaving)
+    end
+    ' note: currently no record kept of which participants signed 
+    ZA -> Z++ : Submit signed xfer, [ending wallet] --> [new wallet]
+    loop until confirmed depth reached
+        ZA -> Z: Poll for block depth
+        Z --> ZA--: Return depth
+    end 
+end 
+group Finish bridge maintenance
+    ZA -> ZA: Propose bridge toll fees for exiting validators and \nCertified redbridge Agent
+    ZA -> ZA: Propose wallet address, clean up, increment epoch, \nand prep for epoch+1 (Certified Agent timing list, etc.)
+    ZA -> RCE++ : Wallet migration successful? (any Agent)
+    RCE -> RCE : Verify migration
+    RCE -[#green]> RCE: <color:green>Write block with results and: "<b>Status: Up\n<color:green>redbridge functioning normally."
+    RCE --> ZA --: Results
+end 
+@enduml

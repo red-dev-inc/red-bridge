@@ -1,0 +1,27 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication G
+
+class "ZavaX\nAgent" as ZA
+class "Zebra" as Z
+class "ZavaX\nConsensus\nEngine" as ZCE
+class "Current\nGuardians" as PV
+class "Threshold of current\nGuardians" as SG
+
+ZA -down-> Z : 23: **Request current wallet balance**
+Z -down-> ZA : 24: Current wallet balance
+ZA -down-> ZCE : 25: Unsigned xfer transaction\nfrom current to new wallet\n(certified Agent only)
+ZA -down-> ZA #blue : <color:blue>26: Verify xfer
+
+ZA -down-> PV : 27: Broadcast message to current\nguardians
+ZA -down-> SG : 28: Gather FROST commitments\n from signing guardians/participants
+SG -up-> ZA : 29: Each submit FROST round1.commit()\nthrough authenticated channel
+
+ZA -down-> ZA #brown : <color:brown> 30: Create new \n<color:brown>FROST SigningPackage
+ZA -down-> SG : 31: Send SigningPackage to all\n signing guardians participating\nof the signature.
+SG -down-> SG : 32: All t participant signing guardians\nuse SigningPackage, nonces\nand KeyPackage to produce\ntheir signature round2.sign().
+SG -down-> ZA : 33: All t signing guardians\nsubmit their SignatureShare to ZCE\nthrough authenticated channel.
+
+ZA -down-> ZCE: 34: Write signature Shares to a block
+
+@enduml

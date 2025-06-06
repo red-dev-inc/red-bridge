@@ -1,14 +1,13 @@
 @startuml
 title Bridge ZEC.z to ZEC Communication D
-top to bottom direction
+left to right direction
 
 class "ZavaX\nAgent" as ZA
-class "ZavaX\nConsensus\nEngine" as ZCE
-class "Zebra\n" as Z
+class "Signing\nGuardians" as SG
 
-ZA -down-> ZCE : **31: Check OK to burn ZEC.z**
-ZCE -down-> Z : 32: Transaction committed?
-Z -up-> ZCE : 33: Confirmation
-ZCE -down-> ZCE : 34: Write block:\ntransaction\nsuccessful/failed
+ZA -down-> ZA : 27 : Create new FROST SigningPackage
+ZA -down-> SG : 28 : Send SigningPackage to all\n signing guardians participating\nof the signature.
+SG -down-> SG : 29 : All t participant signing guardians\nuse SigningPackage, nonces\nand KeyPackage\nto produce their signature round2.sign().
+SG -up-> ZA : 30 : All t signing guardians\nsubmit their SignatureShare to ZCE\nthrough authenticated channel
 
 @enduml

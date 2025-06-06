@@ -14,6 +14,5 @@ ZA -down-> ZC : 33: Relay ZEC.z minting message + gas
 ZC -down-> ZC #brown : <color:brown>34: Verify threshold\n<color:brown>signature, weight,\n<color:brown>and not replayed
 ZC -down-> ZC #blue : <color:blue>35: Mint ZEC.z
 ZC -down-> CC : 36: Send ZEC.z to AVAX wallet address
-ZA -up-> UI : 37: Bridging is complete
 
 @enduml

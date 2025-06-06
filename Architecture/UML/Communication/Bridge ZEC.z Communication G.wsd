@@ -1,22 +1,16 @@
 @startuml
-title Bridge ZEC.z to ZEC Communication G
+title Bridge ZEC.z to ZEC Communication G\nBridging Successful
 top to bottom direction
 
-class "ZavaX\nBridge UI" as UI
-class "Core\nWallet" as MC
-class "Avalanche\nC-Chain" as CC
 class "ZavaX\nAgent" as ZA
-class "Zebra\n" as Z
-class "ZEC Owner" as ZO
+class "ZavaX\nConsensus\nEngine" as ZCE
+class "ZEC.z\nContract" as ZC
+class "Avalanche\nC-Chain" as CC
 
-UI -down-> MC : **45: Request ZEC.z balance**
-MC -down-> CC : 46: Request ZEC.z balance
-CC -up-> MC : 47: ZEC.z balance
-MC -up-> UI : 48: ZEC.z balance
-UI -down-> ZA : 49: Request ZEC balance
-ZA -down-> Z : 50: Request ZEC balance
-Z -up-> ZA : 51: ZEC balance
-ZA -up-> UI : 52: ZEC balance
-UI -up-> ZO : 53: Show Results
+ZCE -up-> ZA : **42: Message that ZEC.z can be burnt**
+ZA -up-> ZC : 43: Message + gas
+ZC -down-> ZC : 44: Verify warp signature\n& weight
+ZC -down-> CC : 45: Burn ZEC.z
+CC -up-> ZC : 46: Confirmation
 
 @enduml

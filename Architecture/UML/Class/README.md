@@ -1,5 +1,5 @@
 ## Class Diagram
-This class UML diagram shows the programmatic structures used to support the ZavaX bridge's **use cases** ([PlantUML](../Usecase/ZavaX%20Usecases.wsd)/[image](../Usecase/ZavaX%20Usecases.png)).
+This class UML diagram shows the programmatic structures used to support the redbridge's **use cases** ([PlantUML](../Usecase/redbridge%20Usecases.wsd)/[image](../Usecase/redbridge%20Usecases.png)).
 
 **Notes:** 
 

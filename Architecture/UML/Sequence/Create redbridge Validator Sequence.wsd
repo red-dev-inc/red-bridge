@@ -1,0 +1,21 @@
+@startuml
+
+skinparam sequenceMessageAlign right
+title Create redbridge Validator
+
+actor "RBR Owner\n(>0.1%)" as ZO
+entity "Avalanche-cli" as AC
+entity "Hardware Wallet\ndevice" as L
+entity "Avalanche\nP-Chain" as AP
+
+ZO -> AC++ : Initiate validation\nand set\nredbridge Agent fees 
+AC -> L++ : Request signature
+L -> ZO : Request approval 
+ZO --> L : Approve
+L -> L : Sign transaction
+L -> AC-- : Signed transaction
+AC -> AP++ : Request validation
+AP --> AC-- : Response
+AC --> ZO-- : Response
+
+@enduml
