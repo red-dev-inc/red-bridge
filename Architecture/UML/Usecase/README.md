@@ -1,2 +1,2 @@
 ## Use Case Diagram
-This use case UML diagram shows the four usecases for the ZavaX bridge. 
+This use case UML diagram shows the four use cases for the redbridge. 

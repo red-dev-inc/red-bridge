@@ -1,0 +1,38 @@
+@startuml
+title redbridge Deployment - One Node and Web Server
+
+Cloud Internet as I
+
+Node ":Web Server" as WS {
+
+    [redbridge\nBridge UI]
+}
+
+Node ":redbridge Node" as ZN {
+    Package "redbridge" as ZX {
+        [redbridge\nAgent] as ZA 
+    }
+'    [ZEC.rbr\nContract] as ZC
+    Package "AvalancheGo" as AG {
+        Package "Avalanche L1s" as SP {
+            [redbridge\nConsensus\nEngine] as RCE
+        }
+        Package "Primary Network" as PN {
+            entity "Avalanche\nC-Chain" as CC
+            entity "Avalanche\nP-Chain" as AP
+            entity "Avalanche\nX-Chain" as XC
+        }
+    }
+    Package "Zebra" as Z {
+        entity "Zcash\nChain" as ZCC
+    }
+}
+
+ZX -- I : TLS
+WS -- I : TLS
+ZA -- RCE : RPC
+ZA -- ZCC : RPC
+ZA -- PN : RPC
+
+
+@enduml

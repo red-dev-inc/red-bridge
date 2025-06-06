@@ -1,0 +1,230 @@
+@startuml
+
+skinparam linetype ortho
+
+title redbridge Birdge Class Diagram
+
+package "redbridgeBridge" {
+
+   package "ZcashNode" #LightGray {
+
+      interface "BlockchainNode" as BN #LightGray {
+         - balance: uint256
+         + getBalance(address: Address): uint256
+         + submitSignedTransaction(signature: Signature): void
+      }
+
+
+      class "Zebra" as Z #LightGray {
+         - zecBalance: uint256
+         + getBalance(address: Address): uint256
+         + submitSignedTransaction(transaction: Transaction): void
+      }
+
+   }
+
+   package "Block" {
+
+      interface "Block" as B {
+         ID: Ids.ID,
+         timestamp: int64
+         height: uint64
+         ParentID: ids.ID
+
+      }
+
+      class "redbridgeBlock" as redbridgeB {
+         message: byte[]
+      }
+   }
+
+   class "ZcashTransaction" as TR {
+      - address: Address
+      - amount: uint256
+   }
+
+   package "FROSTKey" {
+
+      class "FROSTKeyPairGenerator" as FROSTKeyPair {
+         + random: String
+         + generateKeyPair(): KeyPair
+      }
+
+      class "KeyPair" as KP {
+         - privateKey: PrivateKey
+         - publicKey: PublicKey
+         + getPrivateKey(): PrivateKey
+         + getPublicKey(): PublicKey
+      }
+
+      class "PrivateKey" as PrK {
+         - keyData: byte[]
+         + sign(message: byte[]): Signature
+      }
+
+      class "PublicKey" as PK {
+         - keyData: byte[]
+         + getAlgorithm(): String
+         + verify(signature: Signature, message: byte[]): boolean
+      }
+   }
+
+   class "Signature" as S {
+         - signatureData: byte[]
+         + toByteArray(): byte[]
+   }
+
+   class "ZECOwner" as ZH {
+      - privateKey: byte[]
+   }
+
+   package ZcashWallet #LightGray {
+
+      class "NighthawkYWallet" as YW #LightGray {
+         - transferComplete: boolean
+         + sendZECToTransparentAddress(address: Address): void
+         + isTransferComplete(): boolean
+      }
+   }
+
+   class "redbridgeBridgeUI" as UI {
+      - zeczBalance: uint256
+      - transparentAddress: Address
+      - zecBalance: uint256
+      + connectWallet(): void
+      + showZECZBalance(address: Address): uint256
+      + showZECTransparentAddress(): Address
+      + showZECBalance(): uint245
+      + initiateBridgeRequest(request: Request): Response
+      + showZECAvailableForBridging(address: Address): uint256
+      + results(result: String): Response
+   }
+
+   class "redbridgeAgent" as ZA {
+      - zecBalance: Map<Address, uint256>
+      + requestZECBalance(address: Address): uint256
+      + submitSignedTransaction(transaction: Transaction): Response
+      + validateZECSignedTransaction(transaction: Transaction): void
+      + submitMintRequest(transaction: Transaction): void
+      + submitWrapMessageUnsigned(message byte[], amount uint256, address: Address): Response
+      + getMintredbridgeConfirmation(transaction: Transaction, message: byte[]): void
+      - pollTransactionConfirmation(transaction: Transaction): Signature
+      + relayMintredbridge(address: Address, amount: uint256, message: byte[]): void
+      + relayBurnredbridge(address: Address, amount: uint256, message: byte[]): void
+      + relayRefundredbridge(address: Address, amount: uint256, message: byte[]): void
+      - pollQueuedMessage(): String
+      + getBurnredbridgeConfirmation(transaction: Transaction, message: byte[]): void
+      + assembleFROSTSignature(signatures: Signature): Signature
+      + runScheduler()
+      + requestWardenRefresh()
+      + generateNewWallet(key: PrivateKey)
+      + requestBalanceTransfer(currentWallet:Address, newWalletAddreess): Signature
+      + sumbitSignedTransacationToTransfer(currentWallet:Address, newWalletAddreess): Transaction
+      + checkTrasferStatus(transaction:Transaciton)
+      + resetScheduler(request: Request)
+
+   }
+
+   class "redbridgeContract" as ZC {
+      + tokenName: String
+      + tokenSymbol: String
+      + decimals: uint8
+      + totalSupply: uint256
+      + userZECTransfer: Map<Address, uint256>
+      + messages: Map<Transaction, String>
+      - signatureThreshold: uint256
+      + redbridgeContract(tokenName: String, tokenSymbol: String): constructor
+      + processBridgeRequest(request: Request): Response
+      - verifyFunds(address: Address) : uint256
+      - moveFundsToEscrow(address: Address, amount: uint256): void
+      - createWrapMessage(message: String): void
+      - msgToUnwrapZEC(message: String): void
+      - verifySignature(signature: Signature): boolean
+      + mintToken(address: Address, amount: uint256): void
+      + burnToken(address: Address, amount: uint256): void
+      - mint(address: Address, amount: uint256): void
+      - burn(address: Address, amount: uint256): void
+      - refundZecToAddress(address: Address, amount uint256): void
+   }
+
+   package "AvalancheNode" #LightGray {
+
+      class "PChain" as PC #LightGray {
+         - validators: List<Validator>
+         + getValidator(nodeID: String): Validator
+         + addValidators(nodeID: String): Validator
+         + listAllValidators(): List<Validator>
+      }
+
+      class "CChain" as CC #LightGray {
+         - zecredbridgeBalance: uint256
+         + getBalance(address: Address): uint256
+      }
+   }
+
+   package redbridgeConsensusEngine {
+
+      class "Client" as C {
+
+         + verifyChangeRequest()
+         + updateGuardiansSchedules(): Response
+         + setUnderMaintanence()
+         + restartProvisioning()
+         + validateTransactionInZEC(transaction: Transaction): Response
+         + validateWrapMessage(message: Wrap): Response
+         - messageMintredbridge(transaction: Transaction, message: String): void
+         - approveSignWithFROST(message: Byte[]): Signature
+         - messageBurnredbridge(transaction: Transaction, message: String): void
+         - messageRefundZec(transaction: Transaction, message: String): void
+         + createNewDistributedSecretKey(): void
+         + assemblePublicKey(keys: PublickKey[])
+         + verifyWalletTransfer()
+      }
+
+      class "Guardians" as W {
+         + generateFROSTKey()
+         + submitFROSTPublicKey()
+      }
+
+
+      class  "redbridgeVM" as ZVM {
+         - block: Block
+         - currentDepth: uint256
+         + getBlock(context: Context, blkID: ids.ID): Block
+         + getLastAcceptedBlock(): Block
+         - verify(context Context): Error
+         - accept(context Context): Error
+         - reject(context Context): Error
+         - putBlock(context Context): Block
+      }
+
+   }
+
+}
+
+PK *-- TR : verfies
+TR *-- S : signed transactions
+FROSTKeyPair --> KP : generates
+KP --> PrK
+KP --> PK
+PrK --> S : signs
+PK --> S : verifies
+C --> FROSTKeyPair
+ZH --> UI
+UI --> ZA
+ZA <--> C
+UI -- CC
+ZA --> PC
+ZA --> Z
+ZA --> ZC
+ZC --> CC
+ZH -right- YW
+Z --|> BN
+ZVM --> PrK
+redbridgeB ..|> B
+B -up-> ZVM
+C -- ZVM
+W --> FROSTKeyPair
+W --> C
+
+@enduml

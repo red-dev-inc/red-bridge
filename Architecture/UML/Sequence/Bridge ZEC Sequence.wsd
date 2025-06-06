@@ -1,24 +1,24 @@
 @startuml
 
-title Bridge ZEC to ZEC.z Sequence
+title Bridge ZEC to ZEC.rbr Sequence
 
 actor "ZEC Owner" as ZH
-entity "Nighthawk/\nYWallet" as YW
-participant "ZavaX\nBridge UI" as UI
-entity "Core\nWallet" as MC
-participant "ZavaX\nAgent" as ZA 
+entity "Zcash\nWallet" as YW
+participant "redbridge UI" as UI
+entity "Metamask" as MC
+participant "redbridge\nAgent" as ZA 
 entity "Zebra\n" as Z
-participant "ZavaX\nConsensus\nEngine" as ZCE
-participant "ZEC.z\nContract" as ZC
+participant "redbridge\nConsensus\nEngine" as RCE
+participant "ZEC.rbr\nContract" as ZC
 entity "Avalanche\nC-Chain" as CC 
 
 autonumber
 group Gather balance and account info for the ZEC Owner
     ZH -> UI ++: Go to bridge website and \nConnect AVAX wallet
-    UI -> MC ++: Request ZEC.z balance
-    MC -> CC ++: Request ZEC.z balance
-    CC --> MC --: ZEC.z available balance
-    MC --> UI --: ZEC.z available balance
+    UI -> MC ++: Request ZEC.rbr balance
+    MC -> CC ++: Request ZEC.rbr balance
+    CC --> MC --: ZEC.rbr available balance
+    MC --> UI --: ZEC.rbr available balance
     UI -> ZA ++: Request ZEC balance
     ZA -> Z ++: Request ZEC balance
     Z --> ZA : ZEC available balance
@@ -26,7 +26,7 @@ group Gather balance and account info for the ZEC Owner
 end
 
 group Initiate bridging from Zcash (wrap ZEC)
-    UI --> ZH : Show ZEC.z balance,\nZEC transparent address\nassociated with AVAX address,\n& ZEC balance (initially 0)
+    UI --> ZH : Show ZEC.rbr balance,\nZEC transparent address\nassociated with AVAX address,\n& ZEC balance (initially 0)
     ZH -> YW ++: Send ZEC to transparent address
     YW --> ZH --: Shows transfer complete
     UI -> ZA : Request ZEC balance update
@@ -48,36 +48,36 @@ end
 
 
 group Validate
-    ZA -> ZCE ++: Submit vetted request for validation
-    ZCE -> ZCE : check for\nno replay
-    ZCE -> Z ++: Validate: existence, depth
-    Z --> ZCE --: Existence, depth
-    note left: Each ZavaX warden\nqueries its own\nZebra instance
-    ZCE -> ZCE : Write block\nwith ZEC.z\nminting message
+    ZA -> RCE ++: Submit vetted request for validation
+    RCE -> RCE : check for\nno replay
+    RCE -> Z ++: Validate: existence, depth
+    Z --> RCE --: Existence, depth
+    note left: Each redbridge guardian\nqueries its own\nZebra instance
+    RCE -> RCE : Write block\nwith ZEC.rbr\nminting message
 end 
 
-group Mint ZEC.z on Avalanche
+group Mint ZEC.rbr on Avalanche
     loop until timeout
-        ZA -> ZCE : Poll for warp message
+        ZA -> RCE : Poll for warp message
     end
 
     opt If approved
-        ZCE --> ZA : Warp message to mint ZEC.z
-        deactivate ZCE
-        ZA -> ZC ++: Relay ZEC.z minting message + gas
+        RCE --> ZA : Warp message to mint ZEC.rbr
+        deactivate RCE
+        ZA -> ZC ++: Relay ZEC.rbr minting message + gas
         ZC -> ZC : Verify threshold\nsignature, weight
-        ZC -> ZC : Mint ZEC.z
-        ZC -> CC ++: Send ZEC.z to AVAX wallet address 
+        ZC -> ZC : Mint ZEC.rbr
+        ZC -> CC ++: Send ZEC.rbr to AVAX wallet address 
     end 
     deactivate ZC
 end 
 
 group Refresh balance and account info for the ZEC Owner
     ZA --> UI : Bridging is complete
-    UI -> MC ++: Request ZEC.z balance
-    MC -> CC : Request ZEC.z balance
-    CC --> MC --: ZEC.z available balance
-    MC --> UI --: ZEC.z available balance
+    UI -> MC ++: Request ZEC.rbr balance
+    MC -> CC : Request ZEC.rbr balance
+    CC --> MC --: ZEC.rbr available balance
+    MC --> UI --: ZEC.rbr available balance
     ZA -> Z ++: Get ZEC balance
     Z --> ZA --: Updated ZEC balance
     ZA --> UI --: Updated ZEC balance & Results

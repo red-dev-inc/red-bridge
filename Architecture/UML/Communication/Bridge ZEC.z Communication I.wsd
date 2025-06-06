@@ -1,0 +1,22 @@
+@startuml
+title Bridge ZEC.z to ZEC Communication I
+top to bottom direction
+
+class "ZavaX\nBridge UI" as UI
+class "Core\nWallet" as MC
+class "Avalanche\nC-Chain" as CC
+class "ZavaX\nAgent" as ZA
+class "Zebra\n" as Z
+class "ZEC Owner" as ZO
+
+UI -down-> MC : **52: Request ZEC.z balance**
+MC -down-> CC : 53: Request ZEC.z balance
+CC -up-> MC : 54: ZEC.z balance
+MC -up-> UI : 55: ZEC.z balance
+UI -down-> ZA : 56: Request ZEC balance
+ZA -down-> Z : 57: Request ZEC balance
+Z -up-> ZA : 58: ZEC balance
+ZA -up-> UI : 59: ZEC balance
+UI -up-> ZO : 60: Show Results
+
+@enduml

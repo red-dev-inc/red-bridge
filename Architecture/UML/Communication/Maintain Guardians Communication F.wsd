@@ -1,0 +1,13 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication F
+
+class "ZavaX\nAgent" as ZA
+class "New/Continuing\nGuardians" as NV
+
+NV -up-> ZA : 19: Each submit their generated PublicKeyPackage to \nCoordinating ZavaX Agent / Guardian.
+ZA -down-> ZA #blue : <color:blue>20: Check for guardian quorum
+ZA -down-> ZA #purple : <color:purple>21: Aggregate public key\n<color:purple>& wallet address, and\n<color:purple>write to a block
+ZA -down-> NV: 22 : New wallet address
+
+@enduml

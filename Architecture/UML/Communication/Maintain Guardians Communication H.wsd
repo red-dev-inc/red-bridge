@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication H
+
+class "ZavaX\nAgent" as ZA
+class "Zebra" as Z
+
+note bottom of ZA 
+    ZavaX Agent is acts
+    as FROST Coordinator
+end note
+
+ZA -down-> ZA #brown : <color:brown> **35, 36: Aggregate signatures, **\n**<color:brown>sign xfer**
+ZA -down-> ZA #blue : <color:blue> 37: Return signed transaction\n<color:blue>success or failure 
+
+ZA -down-> Z: 38: Submit signed xfer to new wallet
+
+ZA -down-> Z: 39: Poll for block depth
+Z -up-> ZA: 40: Return depth
+
+@enduml

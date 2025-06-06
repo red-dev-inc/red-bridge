@@ -5,20 +5,19 @@ left to right direction
 class "ZEC.z\nContract" as ZC
 class "ZavaX\nAgent" as ZA
 class "ZavaX\nConsensus\nEngine" as ZCE
-class "Zebra\n" as Z
+
+class "Current\nGuardians" as PV
+class "Signing\nGuardians" as SG
 
 ZC -down-> ZC #blue : <color:blue>**18: Put funds into escrow**
 ZC -down-> ZC #brown : <color:brown>19: Create warp\n<color:brown>message for ZavaX
 ZA -down-> ZC : 20: Loop: Poll for queued messages
 ZC -up-> ZA : 21: ZavaX message for ZEC unwrap
 ZA -down-> ZCE : 22: Submit warp message,\nunsigned transaction\nfor ZEC unwrap, & tx fee
-ZCE -down-> ZCE #blue : <color:blue>23: Validate warp message\n<color:blue>from contract
-ZCE -down-> ZCE #brown : <color:brown>24: Wardens\n<color:brown>Approve & sign\n<color:brown>with BLS
-ZCE -down-> ZCE #purple : <color:purple>25: Write block:\n<color:purple>BLS signatures\n<color:purple>transaction ready
-ZCE -up-> ZA : 26: Validation results
-ZA -down-> ZA : 27: Assemble\nBLS signatures
-ZA -down-> Z : 28: Submit signed transaction
-ZA -down-> Z : 29: Poll for block depth
-Z -up-> ZA : 30: Return depth 
+ZCE -down-> ZCE : 23: Validate warp message\nfrom contract
+ZA -down-> PV : 24: Broadcast message to current\nguardians to poll for signing\nguardians\participants.
+ZA -down-> SG : 25 : Gather FROST commitments\n from signing guardians/participants
+SG -up-> ZA : 26 : Each submit FROST round1.commit()\nthrough authenticated channel
+
 
 @enduml

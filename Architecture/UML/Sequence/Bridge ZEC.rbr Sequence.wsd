@@ -1,0 +1,101 @@
+@startuml
+
+title Bridge ZEC.rbr to ZEC Sequence Diagram
+
+actor "ZEC.rbr Owner" as ZO
+participant "redbridge\nBridge UI" as UI
+entity "Metamask\nWallet" as MC
+participant "redbridge\nAgent" as ZA 
+participant "Current\nGuardians" as PV
+participant "Signing\nGuardians" as SG
+participant "ZEC.rbr\nContract" as ZC
+entity "Avalanche\nC-Chain" as CC  
+entity "\nZebra" as Z
+participant "redbridge\nConsensus\nEngine" as RCE
+
+autonumber
+group Gather balance and account info for the ZEC.rbr Owner
+    ZO -> UI ++: Go to bridge website and \nConnect AVAX wallet
+    UI -> MC ++: Request ZEC.rbr balance
+    MC -> CC ++: Request ZEC.rbr balance
+    CC --> MC --: ZEC.rbr balance
+    MC --> UI --: ZEC.rbr balance
+    UI -> ZA ++: Request ZEC balance
+    ZA -> Z ++: Request ZEC balance
+    Z --> ZA --: ZEC balance
+    ZA --> UI --: ZEC balance
+    UI --> ZO : Show ZEC.rbr and ZEC balances & \nZEC transparent address\nassociated with AVAX address
+end
+
+group Initiate bridging on Avalanche
+    ZO -> UI : Initiate bridge reqest
+    UI -> MC ++: Sign request
+    MC --> UI --: Signed request
+    UI -> ZC ++: Send bridge request + gas
+    UI -> ZA ++: Notify: incoming warp message +\ngas for burn/refund
+    ZC -> CC ++: Verify funds availability
+    CC --> ZC --: Funds available
+    ZC -> ZC : Put funds into escrow
+    ZC -> ZC : Create warp\nmessage for redbridge
+end
+
+group Create Zcash transaction (unwrap ZEC)
+    loop until timeout
+        ZA -> ZC : Poll for queued messages
+    end
+    ZC --> ZA : redbridge message for ZEC unwrap
+    ZA -> RCE ++: Submit warp message,\nunsigned transaction\nfor ZEC unwrap, & tx fee
+    RCE -> RCE: Validate warp message\nfrom contract
+    RCE -> PV : broadcast message to current\nguardians to poll for signing\nguardians\participants.
+    RCE -> SG : Gather FROST commitments\n from signing guardians/participants
+    SG --> RCE : Each submit FROST round1.commit()\nthrough authenticated channel
+    ZA -> RCE : create new FROST SigningPackage
+    RCE --> SG : send SigningPackage to all\n signing guardians participating\nof the signature.
+    SG -> SG : All t participant signing guardians\nuse SigningPackage, nonces\nand KeyPackage\nto produce their signature round2.sign().
+    SG --> RCE : All t signing guardians\nsubmit their SignatureShare to RCE\nthrough authenticated channel
+    RCE -> RCE : Write signature Shares to a block
+    RCE -> RCE : aggregate signatures
+    RCE -> RCE : sign xfer
+    RCE --> ZA --: Validation results
+    ZA -> Z ++: Submit signed transaction
+    loop until confirmed depth reached
+        ZA -> Z: Poll for block depth
+        Z --> ZA --: Return depth
+    end 
+end 
+
+opt Zcash transaction appears successful
+
+    ZA -> RCE ++: Check OK to burn ZEC.rbr
+    RCE -> Z ++: Transaction committed?
+    Z --> RCE --: Confirmation
+    note left: Each redbridge guardian\nqueries its own\nZebra instance
+    RCE -> RCE : Write block:\ntransaction\nsuccessful/failed
+    alt Zcash transaction is successful 
+        RCE --> ZA : Message that ZEC.rbr can be burnt
+        ZA --> ZC : Message + gas
+        ZC -> ZC: Verify warp signature\n& weight
+        ZC -> CC ++: Burn ZEC.rbr from escrow
+        CC --> ZC --: Confirmation
+    else Zcash transaction failed
+        RCE --> ZA --: Message to refund ZEC.rbr from escrow
+        ZA --> ZC : Message + gas
+        ZC -> ZC: Verify warp signature\n& weight
+        ZC -> CC ++: Refund ZEC.rbr from escrow
+        CC --> ZC --: Confirmation
+        deactivate ZC
+    end
+end 
+
+group Refresh balance and account info for the ZEC.rbr Owner
+    UI -> MC ++: Request ZEC.rbr balance
+    MC -> CC ++: Request ZEC.rbr balance
+    CC --> MC --: ZEC.rbr balance
+    MC --> UI --: ZEC.rbr balance
+    UI -> ZA : Request ZEC balance
+    ZA -> Z ++: Request ZEC balance
+    Z --> ZA --: ZEC balance
+    ZA --> UI --: ZEC balance
+    UI --> ZO --: Show Results 
+end
+@enduml

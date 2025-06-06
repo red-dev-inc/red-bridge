@@ -9,7 +9,8 @@ class "ZavaX\nAgent" as ZA
 class "Zebra\n" as Z
 class "ZEC Owner" as ZH
 
-UI -down-> MC : **38: Request ZEC.z balance**
+ZA -up-> UI : **37: Bridging is complete**
+UI -down-> MC : 38: Request ZEC.z balance
 MC -down-> CC : 39: Request ZEC.z balance
 CC -up-> MC : 40: ZEC.z available balance
 MC -up-> UI : 41: ZEC.z available balance

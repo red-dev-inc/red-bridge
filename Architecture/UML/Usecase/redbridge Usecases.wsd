@@ -1,0 +1,62 @@
+@startuml
+
+title redbridge Zcash-Avalanche Bridge
+
+package "redbridge" {
+
+    usecase "Maintain Guardians" as UC4
+    usecase "Create Validator" as UC3
+    usecase "Bridge ZEC.rbr to ZEC" as UC2
+    usecase "Bridge ZEC to ZEC.rbr" as UC1
+
+    actor "Certified redbridge Agent" as A4
+    actor "RBR Owner" as A3
+    actor "ZEC.rbr Owner" as A2
+    actor "ZEC Owner" as A1
+
+    A4 --> UC4 : Executes
+    A3 --> UC3 : Executes
+    A2 --> UC2 : Executes
+    A1 --> UC1 : Executes
+    UC4 --> UC3 : <<include>>
+
+    note bottom of UC4
+        Any certified redbridge Agent (see Terms
+        to Know section in the top README.md)
+        triggers the redbridge Consensus Engine
+        to include new validators as guardians,
+        remove expiring validators as guardians
+        (>72 hrs prior to expiry),
+        and migrate bridge funds to a wallet
+        that is controlled by the new guardians.
+    end note
+
+    note bottom of UC4
+        The redbridge consensus engine will only run
+        these operations once every 24 hours.
+    end note
+
+    note bottom of UC3
+        The RBR holder stakes 2000 RBR
+        to create and operate a
+        Validator on the redbridge
+        L1 to run the bridge.
+        Within 24 hours it will become
+        a guardian. Staking is for 30-365 days.
+    end note
+
+    note bottom of UC2
+        The Avalanche user sends
+        ZEC.rbr and receives ZEC
+        on the Zcash blockchain.
+    end note
+
+    note bottom of UC1
+        The Zcash user sends ZEC
+        and receives ZEC.rbr on
+        the Avalanche blockchain.
+    end note
+
+}
+
+@enduml

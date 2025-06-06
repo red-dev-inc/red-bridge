@@ -1,0 +1,37 @@
+@startuml
+skinparam componentStyle uml2
+title redbridge Components
+
+package "redbridge" as ZB {
+    [redbridge\nUI] as UI
+    [redbridge\nAgent] as ZA 
+    note top of ZA : redbridge Agent Tasks:\n• Deliver warp messages\n• Get ZEC balances\n• Submit signed ZEC transactions\n• Initiate guardian maintenance\n• Request consensus validation
+    [redbridge\nConsensus\nEngine] as RCE
+    [ZEC.rbr\nContract] as ZC
+}
+
+
+package "Zebra" as ZCA {
+    entity "Zcash Chain" as Z
+}
+
+package "AvalancheGo" as A {
+    entity "C-Chain" as CC
+    entity "P-Chain" as AP
+}
+
+UI .d.> ZA : Submit\nbalance reqests &\nbridging messages
+UI .d.> CC : Obtain\nbalances\nthrough\nMetamask
+
+ZA .d.> AP : Monitor\nvalidators
+ZA .d.> RCE : Submit bridging &\nwarden maintenance\nmessages
+ZA .d.> Z : Submit\nbalance requests &\nbridge transactions
+ZA <.d.> ZC : Deliver\ninbound/outbound\nbridging\nmessages
+
+RCE .d.> Z : Use as\nan oracle
+RCE .d.> AP : Send fee\npayouts &\nwarden\nmaintenance
+
+ZC .d.> CC : Read\n& append
+
+@enduml
+ 

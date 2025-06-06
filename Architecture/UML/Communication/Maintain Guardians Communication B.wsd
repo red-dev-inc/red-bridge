@@ -1,0 +1,14 @@
+@startuml
+left to right direction
+title Maintain ZavaX Guardians Communication B
+
+class "ZavaX\nAgent" as ZA
+class "ZavaX\nConsensus\nEngine" as ZCE
+class "New/Continuing\nGuardians" as NV
+
+ZA -down-> ZCE : **6: Make guardians change request**\n**(certified Agent only)**
+ZCE -down-> ZCE #brown : <color:brown>7: Verify ZavaX Agent\n<color:brown>certification & change request
+ZCE -down-> ZCE #red : <color:red>8: **Status: Down**\n<color:red>**'ZavaX bridge down for maintenance'**
+ZA -down-> NV : 9: Broadcast create new signature message\nwith total number of n participants and\nt < n threshold number.\n1 key per 0.1% stake.
+
+@enduml
