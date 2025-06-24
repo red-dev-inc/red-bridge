@@ -121,9 +121,9 @@ The ZEC Owner only needs to own ZEC, not AVAX, to bridge. The redbridge Agent is
 
 The redbridge Agent is paid a fee for acting as the Agent for the bridging transaction. This fee is determined by the redbridge Agent itself, so different agents may charge different bridging fees. The fee charged can be a percentage of the transaction and/or a flat fee, and it is paid in ZEC.rbr. 
 
-In connections *29* and *30* the ZA's bridging fees are subtracted from the bridge transaction, and the warp message contains instructions to mint the bridging fee for the ZA guardian and the remaining amount for the ZEC Owner.
+In connections *29* and *30* the RA's bridging fees are subtracted from the bridge transaction, and the warp message contains instructions to mint the bridging fee for the RA guardian and the remaining amount for the ZEC Owner.
 
-redbridge Agent will also deposit *seed* AVAX in ZEC Owner's ZEC.rbr wallet. This amount is chosen by the ZA, but we suggest that it should be enough to cover gas for one or two trades on an Avalanche DEX.
+redbridge Agent will also deposit *seed* AVAX in ZEC Owner's ZEC.rbr wallet. This amount is chosen by the RA, but we suggest that it should be enough to cover gas for one or two trades on an Avalanche DEX.
 
 
 

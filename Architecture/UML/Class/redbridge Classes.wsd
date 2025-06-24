@@ -100,7 +100,7 @@ package "redbridgeBridge" {
       + results(result: String): Response
    }
 
-   class "redbridgeAgent" as ZA {
+   class "redbridgeAgent" as RA {
       - zecBalance: Map<Address, uint256>
       + requestZECBalance(address: Address): uint256
       + submitSignedTransaction(transaction: Transaction): Response
@@ -211,12 +211,12 @@ PrK --> S : signs
 PK --> S : verifies
 C --> FROSTKeyPair
 ZH --> UI
-UI --> ZA
-ZA <--> C
+UI --> RA
+RA <--> C
 UI -- CC
-ZA --> PC
-ZA --> Z
-ZA --> ZC
+RA --> PC
+RA --> Z
+RA --> ZC
 ZC --> CC
 ZH -right- YW
 Z --|> BN

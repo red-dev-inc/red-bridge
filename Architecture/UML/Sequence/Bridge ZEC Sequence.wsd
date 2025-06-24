@@ -6,7 +6,7 @@ actor "ZEC Owner" as ZH
 entity "Zcash\nWallet" as YW
 participant "redbridge UI" as UI
 entity "Metamask" as MC
-participant "redbridge\nAgent" as ZA 
+participant "redbridge\nAgent" as RA 
 entity "Zebra\n" as Z
 participant "redbridge\nConsensus\nEngine" as RCE
 participant "ZEC.rbr\nContract" as ZC
@@ -19,36 +19,36 @@ group Gather balance and account info for the ZEC Owner
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    UI -> ZA ++: Request ZEC balance
-    ZA -> Z ++: Request ZEC balance
-    Z --> ZA : ZEC available balance
-    ZA --> UI : ZEC available balance
+    UI -> RA ++: Request ZEC balance
+    RA -> Z ++: Request ZEC balance
+    Z --> RA : ZEC available balance
+    RA --> UI : ZEC available balance
 end
 
 group Initiate bridging from Zcash (wrap ZEC)
     UI --> ZH : Show ZEC.rbr balance,\nZEC transparent address\nassociated with AVAX address,\n& ZEC balance (initially 0)
     ZH -> YW ++: Send ZEC to transparent address
     YW --> ZH --: Shows transfer complete
-    UI -> ZA : Request ZEC balance update
-    ZA -> Z : Get ZEC available balance
-    Z --> ZA : Updated ZEC available balance
-    ZA --> UI : Updated ZEC available balance
+    UI -> RA : Request ZEC balance update
+    RA -> Z : Get ZEC available balance
+    Z --> RA : Updated ZEC available balance
+    RA --> UI : Updated ZEC available balance
     UI --> ZH : Shows ZEC available for bridging
     ZH -> UI : Initiate bridge reqest
     UI -> MC ++: Request signature
     MC --> UI --: Signature
     UI --> UI : Compose signed ZEC transaction
-    UI -> ZA --: Submit signed ZEC transaction + tx fee auth
-    ZA -> Z : Submit signed ZEC transaction
+    UI -> RA --: Submit signed ZEC transaction + tx fee auth
+    RA -> Z : Submit signed ZEC transaction
     loop Until confirmed depth reached
-        ZA -> Z : Poll
-        Z --> ZA --: Reply
+        RA -> Z : Poll
+        Z --> RA --: Reply
     end 
 end
 
 
 group Validate
-    ZA -> RCE ++: Submit vetted request for validation
+    RA -> RCE ++: Submit vetted request for validation
     RCE -> RCE : check for\nno replay
     RCE -> Z ++: Validate: existence, depth
     Z --> RCE --: Existence, depth
@@ -58,13 +58,13 @@ end
 
 group Mint ZEC.rbr on Avalanche
     loop until timeout
-        ZA -> RCE : Poll for warp message
+        RA -> RCE : Poll for warp message
     end
 
     opt If approved
-        RCE --> ZA : Warp message to mint ZEC.rbr
+        RCE --> RA : Warp message to mint ZEC.rbr
         deactivate RCE
-        ZA -> ZC ++: Relay ZEC.rbr minting message + gas
+        RA -> ZC ++: Relay ZEC.rbr minting message + gas
         ZC -> ZC : Verify threshold\nsignature, weight
         ZC -> ZC : Mint ZEC.rbr
         ZC -> CC ++: Send ZEC.rbr to AVAX wallet address 
@@ -73,14 +73,14 @@ group Mint ZEC.rbr on Avalanche
 end 
 
 group Refresh balance and account info for the ZEC Owner
-    ZA --> UI : Bridging is complete
+    RA --> UI : Bridging is complete
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC : Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    ZA -> Z ++: Get ZEC balance
-    Z --> ZA --: Updated ZEC balance
-    ZA --> UI --: Updated ZEC balance & Results
+    RA -> Z ++: Get ZEC balance
+    Z --> RA --: Updated ZEC balance
+    RA --> UI --: Updated ZEC balance & Results
     UI --> ZH --: Final Results 
 end
 @enduml

@@ -10,7 +10,7 @@ Node ":Web Server" as WS {
 
 Node ":redbridge Node" as ZN {
     Package "redbridge" as ZX {
-        [redbridge\nAgent] as ZA 
+        [redbridge\nAgent] as RA 
     }
 '    [ZEC.rbr\nContract] as ZC
     Package "AvalancheGo" as AG {
@@ -30,9 +30,9 @@ Node ":redbridge Node" as ZN {
 
 ZX -- I : TLS
 WS -- I : TLS
-ZA -- RCE : RPC
-ZA -- ZCC : RPC
-ZA -- PN : RPC
+RA -- RCE : RPC
+RA -- ZCC : RPC
+RA -- PN : RPC
 
 
 @enduml
