@@ -1,5 +1,5 @@
-## red·bridge Zcash-Avalanche Bridge Utilizing an Avalanche L1 (v1.1.0)
-## Architecture
+# red·bridge Zcash-Avalanche Bridge Utilizing an Avalanche L1 
+## Architecture (architecture v1.1.0)
 
 Here you will find architecture-related documents for the **red·bridge** Zcash-Avalanche bridge (hereafter referred to as "redbridge" in these documents). This bridge uses the technique known as *wrapping* to transport value between the Zcash and Avalanche platforms, wrapping Zcash's native token ZEC into ZEC.rbr which can be used on the Avalanche C-chain and beyond. Likewise, ZEC.rbr owners can bridge their ZEC.rbr to ZEC on the Zcash blockchain.
 
