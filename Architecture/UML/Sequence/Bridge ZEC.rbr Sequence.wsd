@@ -4,31 +4,35 @@ title Bridge ZEC.rbr to ZEC Sequence Diagram
 
 actor "ZEC.rbr Owner" as ZO
 participant "redbridge\nBridge UI" as UI
+entity "Zcash\nSnap" as ZS
 entity "Metamask\nWallet" as MC
-participant "redbridge\nAgent" as RA 
+participant "redbridge\nAgent" as RA
 participant "Current\nGuardians" as PV
 participant "Signing\nGuardians" as SG
 participant "ZEC.rbr\nContract" as ZC
-entity "Avalanche\nC-Chain" as CC  
+entity "Avalanche\nC-Chain" as CC
 entity "\nZebra" as Z
 participant "redbridge\nConsensus\nEngine" as RCE
 
+note over ZS, MC: Both run inside\nMetamask extension
+
 autonumber
 group Gather balance and account info for the ZEC.rbr Owner
-    ZO -> UI ++: Go to bridge website and \nConnect AVAX wallet
+    ZO -> UI ++: Go to bridge website and \nConnect Zcash Snap
+    UI -> ZS ++: Request Snap public key
+    ZS --> UI --: Snap public key
+    UI -> UI : Derive transparent address\nfrom public key
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr balance
     MC --> UI --: ZEC.rbr balance
-    UI -> RA ++: Request ZEC balance
-    RA -> Z ++: Request ZEC balance
-    Z --> RA --: ZEC balance
-    RA --> UI --: ZEC balance
-    UI --> ZO : Show ZEC.rbr and ZEC balances & \nZEC transparent address\nassociated with AVAX address
+    UI -> ZS ++: Request ZEC balance
+    ZS --> UI --: ZEC balance
+    UI --> ZO : Show ZEC.rbr and ZEC balances & \nSnap transparent address\n(destination for unwrapped ZEC)
 end
 
 group Initiate bridging on Avalanche
-    ZO -> UI : Initiate bridge request
+    ZO -> UI : Initiate bridge request\n(ZEC destination: Snap transparent address)
     UI -> MC ++: Sign request
     MC --> UI --: Signed request
     UI -> ZC ++: Send bridge request + gas
@@ -36,7 +40,7 @@ group Initiate bridging on Avalanche
     ZC -> CC ++: Verify funds availability
     CC --> ZC --: Funds available
     ZC -> ZC : Burn ZEC.rbr that's to be bridged
-    ZC -> ZC : Create warp\nmessage for redbridge
+    ZC -> ZC : Create warp\nmessage for redbridge\n(includes Snap transparent\naddress as ZEC destination)
 end
 
 group Create Zcash transaction (unwrap ZEC)
@@ -57,12 +61,12 @@ group Create Zcash transaction (unwrap ZEC)
     RCE -> RCE : aggregate signatures
     RCE -> RCE : sign xfer
     RCE --> RA --: Validation results
-    RA -> Z ++: Submit signed transaction
+    RA -> Z ++: Submit signed transaction\n(ZEC to Snap transparent address)
     loop until confirmed depth reached
         RA -> Z: Poll for block depth
         Z --> RA --: Return depth
-    end 
-end 
+    end
+end
 
 opt Zcash transaction appears successful
 
@@ -75,21 +79,19 @@ opt Zcash transaction appears successful
         RCE --> RA --: Message to refund ZEC.rbr
         RA --> ZC : Message + gas
         ZC -> ZC: Verify warp signature\n& weight
-        ZC -> CC ++: Refund (mint ZEC.rbr)
+        ZC -> CC ++: Refund (mint ZEC.rbr\nto primary wallet)
         CC --> ZC --: Confirmation
         deactivate ZC
     end
-end 
+end
 
 group Refresh balance and account info for the ZEC.rbr Owner
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr balance
     MC --> UI --: ZEC.rbr balance
-    UI -> RA : Request ZEC balance
-    RA -> Z ++: Request ZEC balance
-    Z --> RA --: ZEC balance
-    RA --> UI --: ZEC balance
-    UI --> ZO --: Show Results 
+    UI -> ZS ++: Request ZEC balance\n(Snap syncs and returns\nupdated balance including\nnewly unwrapped ZEC)
+    ZS --> UI --: Updated ZEC balance
+    UI --> ZO --: Show Results
 end
 @enduml

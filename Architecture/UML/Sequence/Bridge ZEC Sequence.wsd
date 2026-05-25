@@ -1,49 +1,52 @@
 @startuml
 
-title Bridge ZEC to ZEC.rbr Sequence
+title Bridge ZEC to ZEC.rbr Sequence Diagram
 
 actor "ZEC Owner" as ZH
 entity "Zcash\nWallet" as YW
 participant "redbridge UI" as UI
+entity "Zcash\nSnap" as ZS
 entity "Metamask" as MC
-participant "redbridge\nAgent" as RA 
+participant "redbridge\nAgent" as RA
 entity "Zebra\n" as Z
 participant "redbridge\nConsensus\nEngine" as RCE
 participant "ZEC.rbr\nContract" as ZC
-entity "Avalanche\nC-Chain" as CC 
+entity "Avalanche\nC-Chain" as CC
+
+note over ZS, MC: Both run inside\nMetamask extension
 
 autonumber
 group Gather balance and account info for the ZEC Owner
-    ZH -> UI ++: Go to bridge website and \nConnect AVAX wallet
+    ZH -> UI ++: Go to bridge website and \nConnect Zcash Snap
+    UI -> ZS ++: Request Snap public key
+    ZS --> UI --: Snap public key
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    UI -> RA ++: Request ZEC balance
-    RA -> Z ++: Request ZEC balance
-    Z --> RA : ZEC available balance
-    RA --> UI : ZEC available balance
+    UI -> ZS ++: Request ZEC balance
+    ZS --> UI --: ZEC available balance
 end
 
 group Initiate bridging from Zcash (wrap ZEC)
-    UI --> ZH : Show ZEC.rbr balance,\nZEC transparent address\nassociated with AVAX address,\n& ZEC balance (initially 0)
-    ZH -> YW ++: Send ZEC to transparent address
+    UI -> UI : Derive transparent address\nfrom public key
+    UI --> ZH : Show ZEC.rbr balance,\nSnap transparent address,\n& ZEC balance (initially 0)
+    ZH -> YW ++: Send ZEC to Snap's transparent address
     YW --> ZH --: Shows transfer complete
-    UI -> RA : Request ZEC balance update
-    RA -> Z : Get ZEC available balance
-    Z --> RA : Updated ZEC available balance
-    RA --> UI : Updated ZEC available balance
+    UI -> ZS ++: Sync and request\nZEC balance update
+    ZS --> UI --: Updated ZEC available balance
     UI --> ZH : Shows ZEC available for bridging
-    ZH -> UI : Initiate bridge reqest
-    UI -> MC ++: Request signature
-    MC --> UI --: Signature
-    UI --> UI : Compose signed ZEC transaction
-    UI -> RA --: Submit signed ZEC transaction + tx fee auth
-    RA -> Z : Submit signed ZEC transaction
+    ZH -> UI : Initiate bridge request
+    UI -> ZS ++: Send PCZT for signing
+    ZS -> ZS : Sign PCZT\n(user approves\nvia snap_dialog)
+    ZS --> UI --: Signed ZEC transaction
+    UI -> UI : Compose signed\nZEC transaction
+    UI -> RA ++: Submit signed ZEC transaction\n+ tx fee auth
+    RA -> Z ++: Submit signed ZEC transaction
     loop Until confirmed depth reached
         RA -> Z : Poll
         Z --> RA --: Reply
-    end 
+    end
 end
 
 
@@ -54,7 +57,7 @@ group Validate
     Z --> RCE --: Existence, depth
     note left: Each redbridge guardian\nqueries its own\nZebra instance
     RCE -> RCE : Write block\nwith ZEC.rbr\nminting message
-end 
+end
 
 group Mint ZEC.rbr on Avalanche
     loop until timeout
@@ -64,23 +67,35 @@ group Mint ZEC.rbr on Avalanche
     opt If approved
         RCE --> RA : Warp message to mint ZEC.rbr
         deactivate RCE
-        RA -> ZC ++: Relay ZEC.rbr minting message + gas
+        RA -> ZC ++: Relay ZEC.rbr minting message\n+ gas + seed AVAX for\nSnap-derived address
         ZC -> ZC : Verify threshold\nsignature, weight
         ZC -> ZC : Mint ZEC.rbr
-        ZC -> CC ++: Send ZEC.rbr to AVAX wallet address 
-    end 
+        ZC -> CC ++: Send ZEC.rbr to\nSnap-derived C-Chain address
+    end
     deactivate ZC
-end 
+end
+
+group Auto-forward ZEC.rbr to MetaMask wallet
+    RA --> UI : Minting complete
+    UI -> ZS ++: Request auto-forward
+    ZS -> MC ++: Request user's primary\nwallet address
+    MC --> ZS --: Primary wallet address
+    ZS -> MC ++: Query ZEC.rbr balance\nat Snap-derived address
+    MC --> ZS --: ZEC.rbr balance confirmed
+    ZS -> ZS : Construct ERC-20 transfer\n(Snap-derived addr → primary wallet)
+    ZS -> ZS : Sign transfer with Snap key
+    ZS --> UI --: Signed transfer transaction
+    UI -> CC : Broadcast signed transfer\n(direct RPC)
+    CC --> UI : Transfer confirmed
+end
 
 group Refresh balance and account info for the ZEC Owner
-    RA --> UI : Bridging is complete
-    UI -> MC ++: Request ZEC.rbr balance
+    UI -> MC ++: Request ZEC.rbr balance\n(at primary wallet address)
     MC -> CC : Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    RA -> Z ++: Get ZEC balance
-    Z --> RA --: Updated ZEC balance
-    RA --> UI --: Updated ZEC balance & Results
-    UI --> ZH --: Final Results 
+    UI -> ZS ++: Request ZEC balance
+    ZS --> UI --: Updated ZEC balance
+    UI --> ZH --: Final Results
 end
 @enduml
