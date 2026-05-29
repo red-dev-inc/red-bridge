@@ -18,29 +18,28 @@ note over ZS, MC: Both run inside\nMetamask extension
 autonumber
 group Gather balance and account info for the ZEC Owner
     ZH -> UI ++: Go to bridge website and \nConnect Zcash Snap
-    UI -> ZS ++: Request Snap public key
-    ZS --> UI --: Snap public key
+    UI -> ZS ++: Request viewing key (UFVK)
+    ZS --> UI --: Unified Full Viewing Key (UFVK)
+    UI -> UI : Derive Orchard address\nfrom UFVK
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    UI -> ZS ++: Request ZEC balance
-    ZS --> UI --: ZEC available balance
+    UI -> UI : Sync chain with UFVK,\ncompute ZEC balance
 end
 
 group Initiate bridging from Zcash (wrap ZEC)
-    UI -> UI : Derive transparent address\nfrom public key
-    UI --> ZH : Show ZEC.rbr balance,\nSnap transparent address,\n& ZEC balance (initially 0)
-    ZH -> YW ++: Send ZEC to Snap's transparent address
+    UI --> ZH : Show ZEC.rbr balance,\nSnap Orchard address,\n& ZEC balance (initially 0)
+    ZH -> YW ++: Send ZEC to Snap's Orchard address
     YW --> ZH --: Shows transfer complete
-    UI -> ZS ++: Sync and request\nZEC balance update
-    ZS --> UI --: Updated ZEC available balance
+    UI -> UI : Sync chain with UFVK,\ndetect incoming note,\nupdate ZEC balance
     UI --> ZH : Shows ZEC available for bridging
     ZH -> UI : Initiate bridge request
+    UI -> UI : Create PCZT\n(Orchard spend)
     UI -> ZS ++: Send PCZT for signing
     ZS -> ZS : Sign PCZT\n(user approves\nvia snap_dialog)
-    ZS --> UI --: Signed ZEC transaction
-    UI -> UI : Compose signed\nZEC transaction
+    ZS --> UI --: Signed PCZT
+    UI -> UI : Generate Orchard proof,\nfinalize ZEC transaction
     UI -> RA ++: Submit signed ZEC transaction\n+ tx fee auth
     RA -> Z ++: Submit signed ZEC transaction
     loop Until confirmed depth reached
@@ -94,8 +93,7 @@ group Refresh balance and account info for the ZEC Owner
     MC -> CC : Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr available balance
     MC --> UI --: ZEC.rbr available balance
-    UI -> ZS ++: Request ZEC balance
-    ZS --> UI --: Updated ZEC balance
+    UI -> UI : Sync chain with UFVK,\nupdate ZEC balance
     UI --> ZH --: Final Results
 end
 @enduml

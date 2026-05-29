@@ -19,20 +19,19 @@ note over ZS, MC: Both run inside\nMetamask extension
 autonumber
 group Gather balance and account info for the ZEC.rbr Owner
     ZO -> UI ++: Go to bridge website and \nConnect Zcash Snap
-    UI -> ZS ++: Request Snap public key
-    ZS --> UI --: Snap public key
-    UI -> UI : Derive transparent address\nfrom public key
+    UI -> ZS ++: Request viewing key (UFVK)
+    ZS --> UI --: Unified Full Viewing Key (UFVK)
+    UI -> UI : Derive Orchard address\nfrom UFVK
     UI -> MC ++: Request ZEC.rbr balance
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr balance
     MC --> UI --: ZEC.rbr balance
-    UI -> ZS ++: Request ZEC balance
-    ZS --> UI --: ZEC balance
-    UI --> ZO : Show ZEC.rbr and ZEC balances & \nSnap transparent address\n(destination for unwrapped ZEC)
+    UI -> UI : Sync chain with UFVK,\ncompute ZEC balance
+    UI --> ZO : Show ZEC.rbr and ZEC balances & \nSnap Orchard address\n(destination for unwrapped ZEC)
 end
 
 group Initiate bridging on Avalanche
-    ZO -> UI : Initiate bridge request\n(ZEC destination: Snap transparent address)
+    ZO -> UI : Initiate bridge request\n(ZEC destination: Snap Orchard address)
     UI -> MC ++: Sign request
     MC --> UI --: Signed request
     UI -> ZC ++: Send bridge request + gas
@@ -40,7 +39,7 @@ group Initiate bridging on Avalanche
     ZC -> CC ++: Verify funds availability
     CC --> ZC --: Funds available
     ZC -> ZC : Burn ZEC.rbr that's to be bridged
-    ZC -> ZC : Create warp\nmessage for redbridge\n(includes Snap transparent\naddress as ZEC destination)
+    ZC -> ZC : Create warp\nmessage for redbridge\n(includes Snap Orchard\naddress as ZEC destination)
 end
 
 group Create Zcash transaction (unwrap ZEC)
@@ -61,7 +60,7 @@ group Create Zcash transaction (unwrap ZEC)
     RCE -> RCE : aggregate signatures
     RCE -> RCE : sign xfer
     RCE --> RA --: Validation results
-    RA -> Z ++: Submit signed transaction\n(ZEC to Snap transparent address)
+    RA -> Z ++: Submit signed transaction\n(ZEC to Snap Orchard address)
     loop until confirmed depth reached
         RA -> Z: Poll for block depth
         Z --> RA --: Return depth
@@ -90,8 +89,7 @@ group Refresh balance and account info for the ZEC.rbr Owner
     MC -> CC ++: Request ZEC.rbr balance
     CC --> MC --: ZEC.rbr balance
     MC --> UI --: ZEC.rbr balance
-    UI -> ZS ++: Request ZEC balance\n(Snap syncs and returns\nupdated balance including\nnewly unwrapped ZEC)
-    ZS --> UI --: Updated ZEC balance
+    UI -> UI : Sync chain with UFVK,\nupdate ZEC balance\n(incl. newly unwrapped ZEC)
     UI --> ZO --: Show Results
 end
 @enduml
